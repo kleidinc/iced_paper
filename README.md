@@ -41,13 +41,15 @@ This paper centralizes all knowledge you need to create a desktop (and web-app) 
     * [The Clone Trait](#the-clone-trait)
     * [The Element (Iced)](#the-element-iced)
     * [impl trait](#impl-trait)
-    * [impl Into<Element<'a + Message>>](#impl-intoelementa--message)
+    * [impl Into<Element<'a, Message>>](#impl-intoelementa-message)
+    * [Why use clone?](#why-use-clone)
+  * [Implementation Signature](#implementation-signature)
 
 <!-- mtoc-end -->
 
 # The Why
 
-This guide is written (mostly for myself) to centralize all knowledge about iced.rs in one place. Iced is an amazing tool, and it deserves
+This paper is written (mostly for myself) to centralize all knowledge about iced.rs in one place. Iced is an amazing tool, and it deserves
 high-quality and complete learning resource to empower more engineers to master it.
 
 Although the classic counter, todo and other examples are good as a showcase, they are far from good enough to really harness the Iced Rust power.
@@ -56,18 +58,17 @@ Developing a desktop application, which at the same time can be served on the we
 
 # How is this Paper different?
 
-This is not just a paper on Iced, but also roadmap to learning and understanding important parts of Rust you will need. Examples often use patterns, idioms and idiomatic Rust, without explaing the reasoning or workings behind the code.
+This is not just a paper on Iced, but also roadmap to learning and understanding important parts of Rust. Examples often use patterns, idioms and idiomatic Rust, without explaing the reasoning or workings behind the code.
 Although you can just copy-paste, you won't really understand what is happening. When you 'learn' to use Iced this way, you are not really learning, but assembling mindlessly code-bits.
 The aim of this paper is to really give you an understanding of Iced and its inner workings.
 
 # How to learn?
 
 The best way our brain can learn is by building something you need. During this paper I will share the process of building a Nutricional Macro Calculator.
-I needed this myself, since I did a keto-carnivore diet. You don't have to copy my application. You should instead use use the knowledge and building blocks to build something you want or need.
+I needed this myself, since I am doing a keto-carnivore diet. You don't have to copy my application. You should instead use use the knowledge and building blocks
+to build something you want or need.
 
-I will start with an overview, and then start the process.
-
-You need an understanding of Rust. Although this Paper will introduce you to some parts of Rust, this is far from enough to mastering Rust.
+You do need a basic understanding of Rust. Although this Paper will introduce you to some parts of Rust, this is far from enough to mastering Rust.
 The books I used to get an understanding of Rust are:
 
 - The Rust Book
@@ -76,7 +77,10 @@ The books I used to get an understanding of Rust are:
 - Idiomatic Rust, Tim McNamarra
 - Refactoring Rust
 
-By now, there are many interesting and high-quality books. And I strongly advise you to first read, instead of watching video tutorials.
+Those books are truly treasures and they are worth the money you spend on them. And I strongly advise you to first read a book, instead of watching video tutorials,
+which often are outdated, and have lots of bad practiced baked in them.
+
+If you want to watch a video, then make sure you only watch how Hector, the author of Iced, builds an editor.
 
 # What is Iced.rs?
 
@@ -434,19 +438,25 @@ pub struct Stack<'a, Message, Theme = Theme, Renderer<Renderer, Renderer>> {
 
 ## Need to master before
 
-Before we dive into the code, you need to go a little deeper under the hood and understand some more Rust. If you know all this, feel free to skip.
+Before we dive into the actual code, you need to go a little deeper under the hood and understand, and master some more Rust. If you know all this, feel free to skip.
 
+- Traits
 - The Into Trait
 - Lifetimes
 - The Clone Trait
 - The Element Type
 - impl Trait inside variables of functions
+- The syntax for using lifetimes, impl's and generics in functions
+- The stack Iced widget
 
+  This can't be a full course on Rust. So before you move ahead read up on what you need to know in the documentation.
   A good starting point is the [Generic Types, Traits, and Lifetimes of the Rust book](https://doc.rust-lang.org/book/ch10-00-generics.html).
+  And reading one or more of the books I mentioned at the very beginning is essential.
 
 ### The Into Trait
 
-As with all things you first come accross, the first thing you should do is to go to the [Rust documentation](https://doc.rust-lang.org/std/convert/trait.Into.html), and just read.
+Even if you read books on Rust, when you come accross a new trait or function, the first thing you should do is to go to the [documentation](https://doc.rust-lang.org/std/convert/trait.Into.html), and just read.
+Idiomatic Rust always requires you to write documentation. Therefore most of Rust, especially popular crates are well-enough documented technically.
 
 ```rust
 pub trait Into<T>: Sized {
@@ -481,19 +491,39 @@ impl<T> From<Wrapper<T>> for Vec<T> {
 The impl trait syntax is syntactic sugar for the traditional way to add trait bounds to variables in functions.
 
 ```rust
-fn handle_modal<'a + Message>(parent_creen: Element<'a + Message>, child_screen: Element<'a + Message>') -> Element<'a + Message>
+fn handle_modal<'a, Message>(parent_creen: Element<'a, Message>, child_screen: Element<'a ,Message>') -> Element<'a , Message>
+where
+Message: 'a + Clone
 ```
+
+Important Note: `Message` in this case is a generic type, and not the enum Message.
 
 or
 
 ```rust
-fn handle_modal(parent_screen: impl Into<Element<'a + Message>, child_screen: impl Into<Element<'a + Message>,callback: 'a Message)
+fn handle_modal(parent_screen: impl Into<Element<'a + Message>, child_screen: impl Into<Element<'a + Message>) -> Element<'a, Message>
 where
 Message : 'a + Clone,
--> Element<'a + Message>
 ```
 
-### impl Into<Element<'a + Message>>
+### impl Into<Element<'a, Message>>
 
-And finally `impl Into<Element<'a + Message>` means that the variable has to be able to be converted into an Element<Message> type. In the Iced environment, that
-simply means that any variable you provide needs to be an Iced widget, since they all can be converted into Element<Message>.
+And finally `impl Into<Element<'a, Message>` means that the variable has to be able to be converted into an Element<Message> type, `where Message: 'a + Clone`. In the Iced environment, that
+simply means that any variable you provide needs to be an Iced widget, since they all can be converted into Element<Message>, where message has the 'a lifetime and can be Cloned.
+
+### Why use clone?
+
+## Implementation Signature
+
+```rust
+fn handle_modal<'a, Message>(
+    parent: impl Into<Element<'a, Message>>,
+    child: impl Into<Element<'a, Message>>,
+) -> Element<'a, Message>
+where
+    Message: Clone + 'a,
+{
+    stack![].into()
+}
+
+```
