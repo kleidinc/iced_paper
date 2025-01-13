@@ -37,7 +37,6 @@ This paper centralizes all knowledge you need to create a desktop (and web-app) 
   * [When to use?](#when-to-use)
   * [Pattern](#pattern)
   * [Need to master before](#need-to-master-before)
-    * [The Into Trait](#the-into-trait)
     * [The Clone Trait](#the-clone-trait)
     * [The Element (Iced)](#the-element-iced)
     * [impl trait](#impl-trait)
@@ -444,43 +443,10 @@ Before we dive into the actual code, you need to go a little deeper under the ho
 - The Into Trait
 - Lifetimes
 - The Clone Trait
-- The Element Type
+- The Element Alias Type
 - impl Trait inside variables of functions
 - The syntax for using lifetimes, impl's and generics in functions
 - The stack Iced widget
-
-  This can't be a full course on Rust. So before you move ahead read up on what you need to know in the documentation.
-  A good starting point is the [Generic Types, Traits, and Lifetimes of the Rust book](https://doc.rust-lang.org/book/ch10-00-generics.html).
-  And reading one or more of the books I mentioned at the very beginning is essential.
-
-### The Into Trait
-
-Even if you read books on Rust, when you come accross a new trait or function, the first thing you should do is to go to the [documentation](https://doc.rust-lang.org/std/convert/trait.Into.html), and just read.
-Idiomatic Rust always requires you to write documentation. Therefore most of Rust, especially popular crates are well-enough documented technically.
-
-```rust
-pub trait Into<T>: Sized {
-    //
-    fn into(self) -> T;
-}
-```
-
-By simply looking at the code, you see that the Into trait, has a function `into`, that consumes the input value `self`, and returns the value as type `T`.
-Into is the opposite of the From trait.
-
-In the case of Into, if you need to implement Into for your type, you should instead implement the From trait, because that automatically implements the Into trait.
-
-Now you should understand that `Into<T>` means that it should be convertable into type T. That means that any variable you provide has to comply to that contract, and has to be convertable to type T.
-
-```rust
-struct Wrapper<T>(Vec<T>);
-
-impl<T> From<Wrapper<T>> for Vec<T> {
-    fn from(w: Wrapper<T>) -> Vec<T> {
-        w.0
-    }
-}
-```
 
 ### The Clone Trait
 
