@@ -440,7 +440,7 @@ pub struct Stack<'a, Message, Theme = Theme, Renderer<Renderer, Renderer>> {
 
 Before we dive into the actual code, you need to go a little deeper under the hood and understand, and master some more Rust. If you know all this, feel free to skip.
 
-- Traits
+- [Traits](./TRAITS.md)
 - The Into Trait
 - Lifetimes
 - The Clone Trait
