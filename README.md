@@ -29,12 +29,18 @@ This paper centralizes all knowledge you need to create a desktop (and web-app) 
     * [text](#text)
     * [text_input](#text_input)
     * [button](#button)
+    * [container](#container)
+      * [Styling Popup Modals](#styling-popup-modals)
+    * [center](#center)
+      * [Pattern to center widgets](#pattern-to-center-widgets)
     * [stack!](#stack)
+      * [When to use?](#when-to-use)
+      * [Pattern to use stack](#pattern-to-use-stack)
     * [opaque](#opaque)
     * [mouse_over](#mouse_over)
   * [Themes](#themes)
 * [Multiple Screen Apps](#multiple-screen-apps)
-  * [When to use?](#when-to-use)
+  * [When to use?](#when-to-use-1)
   * [Pattern](#pattern)
   * [Need to master before](#need-to-master-before)
     * [The Clone Trait](#the-clone-trait)
@@ -372,10 +378,49 @@ Note: if you want the Enter to move to the next field, you can create a FocusMes
 button(text("Click me")).on_press(Message::HandleButton);
 ```
 
+### container
+
+#### Styling Popup Modals
+
+The best practice for styling modals is to use the `counter::rounded_box`.
+
+```rust
+let some_element = container(
+    // some other widgets
+    )
+    .padding(10)
+    .width(400)
+    .style(container::rounded_box);
+```
+
+### center
+
+#### Pattern to center widgets
+
+This centers the ui-widgets accros the x- and y-axis.
+
+```rust
+let some_centered_element = center(
+    // some other widgets
+);
+```
+
 ### stack!
+
+#### When to use?
 
 When you need a pop-up or modal to appear on top of your application, for example if you have a form that has to appear you need
 to use a stack macro. This will enable you to stack modals on top of each other.
+
+#### Pattern to use stack
+
+```rust
+pub struct Stack<'a, Message, Theme = Theme, Renderer = Renderer<Renderer, Renderer>> { /* private fields */}
+```
+
+Stack is a container that displays childeren on top of each other.
+
+The first `Element` dictates the intrinsic `Size` of the `Stack` and will be displayed as the base layer. Every consecutive `Element` will be rendered on top; on its own layer.
 
 ### opaque
 
