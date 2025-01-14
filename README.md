@@ -53,7 +53,7 @@ This paper centralizes most knowledge you need to create a desktop (and web-app)
   * [Implementation Signature](#implementation-signature)
 * [Adding a Database to your Iced Application](#adding-a-database-to-your-iced-application)
   * [What you need to know](#what-you-need-to-know-1)
-  * [How, and where, to start a Postgres Pool](#how-and-where-to-start-a-postgres-pool)
+  * [How to set up the connection to Postgres in Iced?](#how-to-set-up-the-connection-to-postgres-in-iced)
 
 <!-- mtoc-end -->
 
@@ -586,16 +586,20 @@ where
 
 ## What you need to know
 
-- SQLX
+- [SQLX](./SQLX.md)
 - Postgres SQL
-- SQLX types
+- SQLX/Postgres types vs Rust types
+- `std::sync::Arc`
 
-You can hit the ground running by reading the [SQLX Paper](./SQLX.md), which is part of the Master Iced Paper.
+You can hit the ground running by reading the [SQLX Paper](./SQLX.md), which is part of the Master Iced Paper. I would strongly
+suggest to read the SQLX documentation before jumping in though.
 
-## How, and where, to start a Postgres Pool
+## How to set up the connection to Postgres in Iced?
 
-All async functions, which will connect to the database, need to have access to a shared pool of database connections.
-So, before you run any SQL, you need to start the pool.
+Once you have the `DATABASE_URL` and have built the database with `sqlx migrate run` it's time to connect from your Iced application.
 
-You could create separate one-time connections inside each of the async functions, and this will work, but its much easier and shorter to just set up the connection
-once at initialization, and then share the pool.
+All async functions, which will connect to the database, need to have access to a shared pool `sqlx::postgres::PgPool`
+database connections.
+
+You could create separate one-time connections inside each async function, and this will work. But that is far from ideal.
+It's much better to start the database connection at initialization in the `fn new`, and then share the pool via the state in an `Option<Arc<PgPool>>`.
