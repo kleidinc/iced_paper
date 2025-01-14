@@ -53,6 +53,7 @@ This paper centralizes most knowledge you need to create a desktop (and web-app)
   * [Implementation Signature](#implementation-signature)
 * [Adding a Database to your Iced Application](#adding-a-database-to-your-iced-application)
   * [What you need to know](#what-you-need-to-know-1)
+  * [How, and where, to start a Postgres Pool](#how-and-where-to-start-a-postgres-pool)
 
 <!-- mtoc-end -->
 
@@ -590,3 +591,11 @@ where
 - SQLX types
 
 You can hit the ground running by reading the [SQLX Paper](./SQLX.md), which is part of the Master Iced Paper.
+
+## How, and where, to start a Postgres Pool
+
+All async functions, which will connect to the database, need to have access to a shared pool of database connections.
+So, before you run any SQL, you need to start the pool.
+
+You could create separate one-time connections inside each of the async functions, and this will work, but its much easier and shorter to just set up the connection
+once at initialization, and then share the pool.
