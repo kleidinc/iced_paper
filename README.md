@@ -51,6 +51,8 @@ This paper centralizes most knowledge you need to create a desktop (and web-app)
     * [impl Into<Element<'a, Message>>](#impl-intoelementa-message)
     * [Why use clone?](#why-use-clone)
   * [Implementation Signature](#implementation-signature)
+* [Adding a Database to your Iced Application](#adding-a-database-to-your-iced-application)
+  * [What you need to know](#what-you-need-to-know-1)
 
 <!-- mtoc-end -->
 
@@ -578,3 +580,13 @@ where
 }
 
 ```
+
+# Adding a Database to your Iced Application
+
+## What you need to know
+
+- SQLX
+- Postgres SQL
+- SQLX types
+
+You can hit the ground running by reading the [SQLX Paper](./SQLX.md), which is part of the Master Iced Paper.
