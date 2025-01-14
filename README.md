@@ -1,6 +1,6 @@
 # Mastering Iced.rs Paper
 
-This paper centralizes all knowledge you need to create a desktop (and web-app) application with Iced, Rust, tokio and Postgres.
+This paper centralizes most knowledge you need to create a desktop (and web-app) application with Iced, Rust, tokio and Postgres.
 
 <!-- mtoc-start -->
 
@@ -31,6 +31,8 @@ This paper centralizes all knowledge you need to create a desktop (and web-app) 
     * [button](#button)
     * [container](#container)
       * [Styling Popup Modals](#styling-popup-modals)
+      * [How to center on the x-axis?](#how-to-center-on-the-x-axis)
+      * [How to center on the y-axis?](#how-to-center-on-the-y-axis)
     * [center](#center)
       * [Pattern to center widgets](#pattern-to-center-widgets)
     * [stack!](#stack)
@@ -54,10 +56,10 @@ This paper centralizes all knowledge you need to create a desktop (and web-app) 
 
 # The Why
 
-This paper is written (mostly for myself) to centralize all knowledge about iced.rs in one place. Iced is an amazing tool, and it deserves
-high-quality and complete learning resource to empower more engineers to master it.
+This paper is written (mostly for myself) to centralize all knowledge about iced.rs in one place. But since it could be useful for other developers I am sharing it.
+Iced is an amazing tool, and it deserves more learning resource to empower more engineers to master it. This is work in progres. This paper is more hands-on.
 
-Although the classic counter, todo and other examples are good as a showcase, they are far from good enough to really harness the Iced Rust power.
+Although the classic counter, todo and other examples are good as a showcase, they are far from enough to really harness the Iced Rust power.
 
 Developing a desktop application, which at the same time can be served on the web, is a very powerful and useful proposition.
 
@@ -73,8 +75,10 @@ The best way our brain can learn is by building something you need. During this 
 I needed this myself, since I am doing a keto-carnivore diet. You don't have to copy my application. You should instead use use the knowledge and building blocks
 to build something you want or need.
 
-You do need a basic understanding of Rust. Although this Paper will introduce you to some parts of Rust, this is far from enough to mastering Rust.
-The books I used to get an understanding of Rust are:
+First I will built the login and registration forms, and then will continue adding functionalities as we move on. I will share the code in the Rust Iced and Rust forums to get feedback on the code and this paper. Feedback is very welcome.
+
+Before you can harness the power of Iced, you do need a basic understanding of Rust. Although this Paper will introduce you to some parts of Rust, this is far from enough to mastering Rust.
+The books I used (and liked) to get an understanding of Rust are:
 
 - The Rust Book
 - Rust in Action, Tim McNamarra
@@ -85,7 +89,7 @@ The books I used to get an understanding of Rust are:
 Those books are truly treasures and they are worth the money you spend on them. And I strongly advise you to first read a book, instead of watching video tutorials,
 which often are outdated, and have lots of bad practiced baked in them.
 
-If you want to watch a video, then make sure you only watch how Hector, the author of Iced, builds an editor.
+If you want to watch a video, then make sure you only watch how Hector, the author of Iced, builds an editor. This is very interesting and will give you a good introduction into the power on Iced.
 
 # What is Iced.rs?
 
@@ -145,6 +149,8 @@ impl AppName {
 
     fn update(&mut self, message: Message) -> Task<Message> {
         match message {
+            // The naming is kind of brought over from webdevelopment ... where you have onchange ... all over
+            // but I also use HandleInputChange
             Message::OnChangeEmail(email) => {
                 self.email = email;
                 Task::none()
@@ -382,7 +388,7 @@ button(text("Click me")).on_press(Message::HandleButton);
 
 #### Styling Popup Modals
 
-The best practice for styling modals is to use the `counter::rounded_box`.
+To style pop-up screens use the `.style(counter::rounded_box)`.
 
 ```rust
 let some_element = container(
@@ -390,10 +396,22 @@ let some_element = container(
     )
     .padding(10)
     .width(400)
+    .center_x(Fill)
+    .center_y(Fill)
     .style(container::rounded_box);
 ```
 
+#### How to center on the x-axis?
+
+Use the `.center_x(Fill)` .
+
+#### How to center on the y-axis?
+
+Use the `.center_y(Fill)`
+
 ### center
+
+If you want to center on the x and y axis at the same time use the `center(/* widgets to center */)` widget. The center is a custom container with both the center_x and center_y preset.
 
 #### Pattern to center widgets
 
@@ -411,6 +429,28 @@ let some_centered_element = center(
 
 When you need a pop-up or modal to appear on top of your application, for example if you have a form that has to appear you need
 to use a stack macro. This will enable you to stack modals on top of each other.
+
+```rust
+fn show_form<'a, Message>(
+    dashboard: impl Into<Element<'a, Message>>,
+    form: impl Into<Element<'a, Message>>,
+) -> Element<'a, Message>
+where
+    Message: 'a + Clone,
+{
+    stack![
+        dashboard.into(),
+        container(form)
+            .style(container::rounded_box)
+            // you could use the center widget instead
+            .center_x(Fill)
+            .center_y(Fill)
+    ]
+    .into()
+}
+```
+
+This is an example of a function that shows forms, used in the [Iced Forms Experiment](https://github.com/kleidinc/iced_login_form_example).
 
 #### Pattern to use stack
 
